@@ -191,13 +191,13 @@ Capstone Project/
 
 ## 🔄 Data Flow & Processing Logic
 
-### Bronze Layer — Raw Ingestion
+### 🥉 Bronze Layer — Raw Ingestion
 - Uses **Auto Loader** (`cloudFiles` format) for incremental file detection
 - Adds `load_time` (audit timestamp) and `source_file` (lineage) to every record
 - `kafka_multiplex_bz` is **partitioned by `topic` and `week_part`** for efficient downstream reads
 - Date enrichment via **broadcast join** with `date_lookup` table on ingestion
 
-### Silver Layer — Phased Upserts (3 Phases)
+### 🥈 Silver Layer — Phased Upserts (3 Phases)
 
 **Phase 1 — Core tables (parallel streams):**
 - `users` — Deduplication on `(user_id, device_id)` + insert-only MERGE
@@ -276,7 +276,7 @@ The `08-batch-test.py` notebook implements a full end-to-end integration test:
 The project includes a fully automated **Azure DevOps build pipeline** (`azure_build_pipeline.yaml`):
 
 - Triggers on every branch push
-- Sets up Python 3.10 environment
+- Sets up Python 3.17 environment
 - Installs dependencies (pytest, requests)
 - Packages notebooks into a build artifact (ZIP)
 - Publishes artifact as `DatabricksBuild`
@@ -290,7 +290,7 @@ Deployment scripts (`deploy.sh`, `deploy-notebooks.sh`) handle notebook promotio
 ### Prerequisites
 - Databricks Workspace with **Unity Catalog** enabled
 - Two External Locations configured: `data_zone` and `checkpoint`
-- Python 3.8+
+- Python 3.17+
 - Azure DevOps (for CI/CD)
 
 ### Run the Pipeline
@@ -325,7 +325,7 @@ bash run-integration-test.sh
 
 **Giridhar Reddy T**
 Data Engineer | Databricks | Spark | Delta Lake | Kafka
-[LinkedIn](https://www.linkedin.com/in/giridhar-reddy-tatiparthi-272b94244/) • [GitHub](https://github.com/GiridharReddy-T)
+[LinkedIn](https://www.linkedin.com/in/giridhar-reddy-tatiparthi-272b94244/) • [GitHub](https://github.com/GiridharReddy-T) • [Portfolio](https://giridharreddy-t.github.io/)
 
 ---
 
