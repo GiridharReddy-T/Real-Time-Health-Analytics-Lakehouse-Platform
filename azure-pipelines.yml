@@ -10,9 +10,6 @@ variables:
 
 stages:
 
-# =============================================
-# STAGE 1: BUILD
-# =============================================
 - stage: Build
   displayName: 'Build Stage'
   jobs:
@@ -50,9 +47,6 @@ stages:
         ArtifactName: 'DatabricksBuild'
 
 
-# =============================================
-# STAGE 2: DEPLOY
-# =============================================
 - stage: Deploy
   displayName: 'Deploy Stage'
   dependsOn: Build
@@ -69,11 +63,13 @@ stages:
       displayName: 'Checkout Repository'
 
     - script: |
-        curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+        curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | DATABRICKS_INSTALL_DIR=$HOME/.databricks sh
+        export PATH=$HOME/.databricks:$PATH
         databricks --version
       displayName: 'Install Databricks CLI'
 
     - script: |
+        export PATH=$HOME/.databricks:$PATH
         databricks bundle validate -t $(BUNDLE_TARGET)
       displayName: 'Validate Bundle'
       env:
@@ -81,6 +77,7 @@ stages:
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
     - script: |
+        export PATH=$HOME/.databricks:$PATH
         databricks bundle deploy -t $(BUNDLE_TARGET)
       displayName: 'Deploy Bundle to Databricks'
       env:
@@ -88,9 +85,6 @@ stages:
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
 
-# =============================================
-# STAGE 3: TEST
-# =============================================
 - stage: Test
   displayName: 'Test Stage'
   dependsOn: Deploy
@@ -103,10 +97,13 @@ stages:
     steps:
 
     - script: |
-        curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+        curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | DATABRICKS_INSTALL_DIR=$HOME/.databricks sh
+        export PATH=$HOME/.databricks:$PATH
+        databricks --version
       displayName: 'Install Databricks CLI'
 
     - script: |
+        export PATH=$HOME/.databricks:$PATH
         databricks bundle run batch-integration-test -t $(BUNDLE_TARGET)
       displayName: 'Run Batch Integration Test'
       env:
@@ -115,9 +112,6 @@ stages:
       timeoutInMinutes: 60
 
 
-# =============================================
-# STAGE 4: RUN PIPELINE
-# =============================================
 - stage: RunPipeline
   displayName: 'Run Pipeline Stage'
   dependsOn: Test
@@ -130,12 +124,15 @@ stages:
     steps:
 
     - script: |
-        curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+        curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | DATABRICKS_INSTALL_DIR=$HOME/.databricks sh
+        export PATH=$HOME/.databricks:$PATH
+        databricks --version
       displayName: 'Install Databricks CLI'
 
     - script: |
+        export PATH=$HOME/.databricks:$PATH
         databricks bundle run health-analytics-pipeline -t $(BUNDLE_TARGET)
-      displayName: 'Run Bronze Silver Gold Pipeline'
+      displayName: 'Run Health Analytics Pipeline'
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
