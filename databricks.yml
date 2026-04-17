@@ -12,6 +12,10 @@ variables:
 workspace:
   root_path: /Users/giridharreddyt@chintuchinu1687gmail.onmicrosoft.com/Real-Time-Health-Analytics-Lakehouse-Platform/.bundle/${bundle.target}
 
+permissions:
+  - level: CAN_MANAGE
+    user_name: giridharreddyt@chintuchinu1687gmail.onmicrosoft.com
+
 resources:
   jobs:
     health-analytics-pipeline:
