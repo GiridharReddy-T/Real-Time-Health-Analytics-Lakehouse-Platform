@@ -1,0 +1,57 @@
+bundle:
+  name: health-analytics-lakehouse
+
+variables:
+  environment:
+    description: "Target catalog/environment name"
+    default: "dev"
+  cluster_id:
+    description: "Existing cluster ID"
+    default: "0405-192415-ox6uufmq"
+
+workspace:
+  root_path: /Users/giridharreddyt@chintuchinu1687gmail.onmicrosoft.com/Real-Time-Health-Analytics-Lakehouse-Platform/.bundle/${bundle.target}
+
+resources:
+  jobs:
+    health-analytics-pipeline:
+      name: "Health Analytics Lakehouse - ${bundle.target} Pipeline"
+      max_concurrent_runs: 1
+      tasks:
+        - task_key: run-pipeline
+          notebook_task:
+            notebook_path: /Users/giridharreddyt@chintuchinu1687gmail.onmicrosoft.com/Real-Time-Health-Analytics-Lakehouse-Platform/Capstone Project/Notebooks/07-run
+            base_parameters:
+              Environment: ${var.environment}
+              RunType: "once"
+              ProcessingTime: "5 seconds"
+            source: WORKSPACE
+          existing_cluster_id: ${var.cluster_id}
+          timeout_seconds: 1800
+
+    batch-integration-test:
+      name: "Health Analytics - ${bundle.target} Batch Test"
+      max_concurrent_runs: 1
+      tasks:
+        - task_key: batch-test
+          notebook_task:
+            notebook_path: /Users/giridharreddyt@chintuchinu1687gmail.onmicrosoft.com/Real-Time-Health-Analytics-Lakehouse-Platform/Capstone Project/Notebooks/08-batch-test
+            base_parameters:
+              Environment: ${var.environment}
+            source: WORKSPACE
+          existing_cluster_id: ${var.cluster_id}
+          timeout_seconds: 3600
+
+targets:
+  dev:
+    mode: development
+    default: true
+    variables:
+      environment: "dev"
+
+  prod:
+    mode: production
+    variables:
+      environment: "prod"
+    run_as:
+      user_name: giridharreddyt@chintuchinu1687gmail.onmicrosoft.com
