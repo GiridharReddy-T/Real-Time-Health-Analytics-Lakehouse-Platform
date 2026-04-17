@@ -63,22 +63,22 @@ stages:
       displayName: 'Checkout Repository'
 
     - script: |
-        curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | DATABRICKS_INSTALL_DIR=$HOME/.databricks sh
-        export PATH=$HOME/.databricks:$PATH
-        databricks --version
+        mkdir -p $HOME/.databricks
+        curl -fsSL https://github.com/databricks/cli/releases/download/v0.297.1/databricks_cli_0.297.1_darwin_amd64.zip -o /tmp/databricks.zip
+        unzip -o /tmp/databricks.zip -d $HOME/.databricks
+        chmod +x $HOME/.databricks/databricks
+        $HOME/.databricks/databricks --version
       displayName: 'Install Databricks CLI'
 
     - script: |
-        export PATH=$HOME/.databricks:$PATH
-        databricks bundle validate -t $(BUNDLE_TARGET)
+        $HOME/.databricks/databricks bundle validate -t $(BUNDLE_TARGET)
       displayName: 'Validate Bundle'
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
     - script: |
-        export PATH=$HOME/.databricks:$PATH
-        databricks bundle deploy -t $(BUNDLE_TARGET)
+        $HOME/.databricks/databricks bundle deploy -t $(BUNDLE_TARGET)
       displayName: 'Deploy Bundle to Databricks'
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
@@ -97,14 +97,15 @@ stages:
     steps:
 
     - script: |
-        curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | DATABRICKS_INSTALL_DIR=$HOME/.databricks sh
-        export PATH=$HOME/.databricks:$PATH
-        databricks --version
+        mkdir -p $HOME/.databricks
+        curl -fsSL https://github.com/databricks/cli/releases/download/v0.297.1/databricks_cli_0.297.1_darwin_amd64.zip -o /tmp/databricks.zip
+        unzip -o /tmp/databricks.zip -d $HOME/.databricks
+        chmod +x $HOME/.databricks/databricks
+        $HOME/.databricks/databricks --version
       displayName: 'Install Databricks CLI'
 
     - script: |
-        export PATH=$HOME/.databricks:$PATH
-        databricks bundle run batch-integration-test -t $(BUNDLE_TARGET)
+        $HOME/.databricks/databricks bundle run batch-integration-test -t $(BUNDLE_TARGET)
       displayName: 'Run Batch Integration Test'
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
@@ -124,14 +125,15 @@ stages:
     steps:
 
     - script: |
-        curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | DATABRICKS_INSTALL_DIR=$HOME/.databricks sh
-        export PATH=$HOME/.databricks:$PATH
-        databricks --version
+        mkdir -p $HOME/.databricks
+        curl -fsSL https://github.com/databricks/cli/releases/download/v0.297.1/databricks_cli_0.297.1_darwin_amd64.zip -o /tmp/databricks.zip
+        unzip -o /tmp/databricks.zip -d $HOME/.databricks
+        chmod +x $HOME/.databricks/databricks
+        $HOME/.databricks/databricks --version
       displayName: 'Install Databricks CLI'
 
     - script: |
-        export PATH=$HOME/.databricks:$PATH
-        databricks bundle run health-analytics-pipeline -t $(BUNDLE_TARGET)
+        $HOME/.databricks/databricks bundle run health-analytics-pipeline -t $(BUNDLE_TARGET)
       displayName: 'Run Health Analytics Pipeline'
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
