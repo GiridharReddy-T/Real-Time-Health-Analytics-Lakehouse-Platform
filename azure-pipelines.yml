@@ -1,0 +1,142 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
+      - release
+
+variables:
+  BUNDLE_TARGET: dev
+
+stages:
+
+# =============================================
+# STAGE 1: BUILD
+# =============================================
+- stage: Build
+  displayName: 'Build Stage'
+  jobs:
+  - job: BuildJob
+    displayName: 'Package Notebooks'
+    pool:
+      name: Default
+    steps:
+
+    - checkout: self
+      clean: true
+      displayName: 'Checkout Repository'
+
+    - script: |
+        python3 -m pip install --upgrade pip
+        pip3 install databricks-sdk
+      displayName: 'Install Dependencies'
+
+    - script: |
+        cp -R $(Build.SourcesDirectory)/* $(Build.BinariesDirectory)/
+      displayName: 'Copy Project Files'
+
+    - task: ArchiveFiles@2
+      displayName: 'Create Artifact ZIP'
+      inputs:
+        rootFolderOrFile: '$(Build.BinariesDirectory)'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        replaceExistingArchive: true
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact'
+      inputs:
+        ArtifactName: 'DatabricksBuild'
+
+
+# =============================================
+# STAGE 2: DEPLOY
+# =============================================
+- stage: Deploy
+  displayName: 'Deploy Stage'
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - job: DeployJob
+    displayName: 'Deploy to Databricks'
+    pool:
+      name: Default
+    steps:
+
+    - checkout: self
+      clean: true
+      displayName: 'Checkout Repository'
+
+    - script: |
+        curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+        databricks --version
+      displayName: 'Install Databricks CLI'
+
+    - script: |
+        databricks bundle validate -t $(BUNDLE_TARGET)
+      displayName: 'Validate Bundle'
+      env:
+        DATABRICKS_HOST: $(DATABRICKS_HOST)
+        DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+
+    - script: |
+        databricks bundle deploy -t $(BUNDLE_TARGET)
+      displayName: 'Deploy Bundle to Databricks'
+      env:
+        DATABRICKS_HOST: $(DATABRICKS_HOST)
+        DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+
+
+# =============================================
+# STAGE 3: TEST
+# =============================================
+- stage: Test
+  displayName: 'Test Stage'
+  dependsOn: Deploy
+  condition: succeeded()
+  jobs:
+  - job: TestJob
+    displayName: 'Run Integration Tests'
+    pool:
+      name: Default
+    steps:
+
+    - script: |
+        curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+      displayName: 'Install Databricks CLI'
+
+    - script: |
+        databricks bundle run batch-integration-test -t $(BUNDLE_TARGET)
+      displayName: 'Run Batch Integration Test'
+      env:
+        DATABRICKS_HOST: $(DATABRICKS_HOST)
+        DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+      timeoutInMinutes: 60
+
+
+# =============================================
+# STAGE 4: RUN PIPELINE
+# =============================================
+- stage: RunPipeline
+  displayName: 'Run Pipeline Stage'
+  dependsOn: Test
+  condition: succeeded()
+  jobs:
+  - job: RunJob
+    displayName: 'Run Health Analytics Pipeline'
+    pool:
+      name: Default
+    steps:
+
+    - script: |
+        curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+      displayName: 'Install Databricks CLI'
+
+    - script: |
+        databricks bundle run health-analytics-pipeline -t $(BUNDLE_TARGET)
+      displayName: 'Run Bronze Silver Gold Pipeline'
+      env:
+        DATABRICKS_HOST: $(DATABRICKS_HOST)
+        DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+      timeoutInMinutes: 60
