@@ -10,11 +10,7 @@ variables:
     default: "0405-192415-ox6uufmq"
 
 workspace:
-  root_path: /Users/giridharreddyt@chintuchinu1687gmail.onmicrosoft.com/Real-Time-Health-Analytics-Lakehouse-Platform/.bundle/${bundle.target}
-
-permissions:
-  - level: CAN_MANAGE
-    user_name: giridharreddyt@chintuchinu1687gmail.onmicrosoft.com
+  root_path: /Workspace/Users/giridharreddyt@chintuchinu1687gmail.onmicrosoft.com/Real-Time-Health-Analytics-Lakehouse-Platform/real-time-health-analytics/.bundle/${bundle.target}
 
 resources:
   jobs:
@@ -24,7 +20,7 @@ resources:
       tasks:
         - task_key: run-pipeline
           notebook_task:
-            notebook_path: /Users/giridharreddyt@chintuchinu1687gmail.onmicrosoft.com/Real-Time-Health-Analytics-Lakehouse-Platform/Capstone Project/Notebooks/07-run
+            notebook_path: /Users/giridharreddyt@chintuchinu1687gmail.onmicrosoft.com/Real-Time-Health-Analytics-Lakehouse-Platform/Capstone_Project/Notebooks/07-run
             base_parameters:
               Environment: ${var.environment}
               RunType: "once"
@@ -39,7 +35,7 @@ resources:
       tasks:
         - task_key: batch-test
           notebook_task:
-            notebook_path: /Users/giridharreddyt@chintuchinu1687gmail.onmicrosoft.com/Real-Time-Health-Analytics-Lakehouse-Platform/Capstone Project/Notebooks/08-batch-test
+            notebook_path: /Users/giridharreddyt@chintuchinu1687gmail.onmicrosoft.com/Real-Time-Health-Analytics-Lakehouse-Platform/Capstone_Project/Notebooks/08-batch-test
             base_parameters:
               Environment: ${var.environment}
             source: WORKSPACE
@@ -48,13 +44,18 @@ resources:
 
 targets:
   dev:
-    mode: development
+    permissions:
+      - user_name: giridharreddyt@chintuchinu1687gmail.onmicrosoft.com
+        level: CAN_MANAGE
     default: true
     variables:
       environment: "dev"
 
   prod:
     mode: production
+    permissions:
+      - user_name: giridharreddyt@chintuchinu1687gmail.onmicrosoft.com
+        level: CAN_MANAGE
     variables:
       environment: "prod"
     run_as:
