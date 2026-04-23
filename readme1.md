@@ -57,8 +57,8 @@ MEDALLION LAKEHOUSE  (Databricks + Delta Lake + Unity Catalog)
   │   Raw ingestion using Spark Structured Streaming             │
   │   (Auto Loader / cloudFiles format)                          │
   │                                                              │
-  │   registered_users_bz   → CSV batch files                   │
-  │   gym_logins_bz         → CSV batch files                   │
+  │   registered_users_bz   → CSV batch files                    │
+  │   gym_logins_bz         → CSV batch files                    │
   │   kafka_multiplex_bz    → JSON Kafka events                  │
   │   (Partitioned by topic + week_part)                         │
   │   Audit: load_time, source_file columns added                │
@@ -73,7 +73,7 @@ MEDALLION LAKEHOUSE  (Databricks + Delta Lake + Unity Catalog)
   │     users              ← dedup + MERGE (insert-only)         │
   │     gym_logs           ← MERGE (insert + conditional update) │
   │     user_profile       ← CDC MERGE via CDCUpserter           │
-  │                           (new/update/delete, SCD Type 1)   │
+  │                           (new/update/delete, SCD Type 1)    │
   │     workouts           ← dedup + MERGE                       │
   │     heart_rate         ← dedup + MERGE + valid flag          │
   │                                                              │
@@ -94,7 +94,7 @@ MEDALLION LAKEHOUSE  (Databricks + Delta Lake + Unity Catalog)
   │                                                              │
   │   workout_bpm_summary → Streaming aggregation                │
   │                          min/avg/max BPM per session         │
-  │                          enriched with user demographic bins  │
+  │                          enriched with user demographic bins │
   │   gym_summary         → SQL View                             │
   │                          visit duration + exercise time      │
   └──────────────────────────────────────────────────────────────┘
@@ -360,7 +360,7 @@ Upload test data files to your `data_zone` external location:
     ├── 4-workout_2.json
     ├── 5-gym_logins_1.csv
     ├── 5-gym_logins_2.csv
-    ├── 6-date-lookup.json/        ← folder, not a file
+    ├── 6-date-lookup.json       
     ├── 7-gym_summary_1.parquet
     └── 7-gym_summary_2.parquet
 ```
