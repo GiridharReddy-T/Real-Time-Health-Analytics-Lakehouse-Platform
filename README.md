@@ -436,6 +436,7 @@ Data Engineer | Databricks | Spark | Delta Lake | Kafka | Azure
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://www.linkedin.com/in/giridhar-reddy-tatiparthi-272b94244/)
 [![GitHub](https://img.shields.io/badge/GitHub-Follow-black?logo=github)](https://github.com/GiridharReddy-T)
 [![Portfolio](https://img.shields.io/badge/Portfolio-Visit-green)](https://giridharreddy-t.github.io/)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/GiridharReddy-T/Real-Time-Health-Analytics-Lakehouse-Platform)
 
 ---
 
